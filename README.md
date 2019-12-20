@@ -22,6 +22,10 @@ zef install RakuAdvent::WordPress;
 zef install p6doc
 p6doc RakuAdvent::WordPress;
 ```
+
+## References
+- WordPress API
+
 ## See also
 - `Text::Wrap`
 
