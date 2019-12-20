@@ -1,0 +1,498 @@
+<!-- title: Day 24 - A Raku Advent Helper -->
+
+<p>
+I have been writing Raku Advent posts annually
+since 2016 and it's always been a struggle for me 
+to get a reliable transformation of my source file
+into the Raku Advent Wordpress (WP) website without something getting changed
+by WP. Then, the menus are terrible and editing can
+be troublesome.
+</p>
+
+In past years I've created the articles in Gihub-flavored
+markdown, manually (with the assistance of my Emacs editor)
+converted each paragraph to single, long lines, and then posted it in a Github gist 
+After that, I used the tool, developed by Zoffix and modified by ??,
+to extract the html from Github's representation of the
+markdown which results in a nice highlighting of code
+blocks. Finally, that html is copied and pasted into WP and a publishing
+schedule set up.
+
+That process is outlined here:
+
+1. write the post in Github-favored Markdown text
+2. collapse each paragraph to one long line
+3. paste the source into a Github gist
+4. use the existing Advent tool to extract the resulting
+   html representation to one's local computer
+5. copy the html and paste it into the blank, html
+   view of the selected WP editor
+6. view the finished product and check for errors
+
+If errors are found:
+
+7. correct the errors in the WP editor
+
+OR
+
+7. correct the errors in the source
+8. repeat steps 2 through 6 again
+
+My steps:
+
+1. write the post in raw html
+2. run my Advent tool to format the source
+   into WP-acceptable html
+3. copy the html and paste it into the blank, html
+   view of the selected WP editor
+4. view the finished product and check for errors
+
+If errors are found:
+
+5. correct the errors in the WP editor
+
+OR
+
+5. correct the errors in the source
+8. repeat steps 2 through 4 again
+
+That process is not so bad the first time though it, but when, inevitably,
+errors are found, one has the choice of manually editing it on WP
+or modifying the source and going through the entire process again!
+Neither choice is very good.
+
+
+
+
+
+
+
+<h3>Spoiler Alert!</h3>
+
+<p>When I started this two-part post, I was blissfully unaware of a
+similar topic in the Raku community; however, I was awakened to that
+fact when I first read Elizabeth Mattijsen's
+<a href="https://rakudoweekly.blog/2019/12/09/2019-49-almost-starring/">Raku
+Weekly Blog</a> on Monday, 9 Dec, and saw that the famous Perl and
+Raku expert, Jeff Goff, had written a
+multi-part <a href="http://www.theperlfisher.com/index.php/2019/12/02/rewriting-legacy-code-for-raku-iii-the-sorceror/">series</a>
+on porting a very complex Perl module, <a href=""></a>to Raku. The
+only saving grace for me is that the posts are highly technical, and
+its audience is for serious Raku hackers who want to produce native
+Raku code for the most complicated Perl modules in existence: a highly
+recommended read for the accomplished programmer who relishes
+reverse-engineering and all its tribulations!  So, with a tip of my
+hat to Jeff, I will continue to slog along here in my old Perl garden
+which is so overgrown with <em>newby</em>, self-taught Perl.</p>
+
+<p>One more side note: the author of the module Jeff is porting,
+  <a href="https://metacpan.org/author/JMCNAMARA">John McNamara</a>, is my
+  favorite Perl module author, whose wonderful modules enabling Perl
+  users to slice and dice Microsoft Excel were life-savers for me in
+  my last job. I have had several e-mail discussions with John over
+  the years, and he is a kind and very talented man who has
+  contributed so much for Perl user. Many thanks, John!</p>
+
+<h3>Introduction</h3>
+
+<p>
+In this post we will continue to port old Perl code
+to Raku. In order to follow this Part 2 you should have read the
+<a href="https://rakuadventcalendar.wordpress.com/2019/12/01/day-1-raku-from-perl/">Part
+1</a> post.  Make sure you clone the exercise code from Github so you can
+follow along since much of the actual porting problems and solutions
+are shown as git commits in each <em>stage-N</em> branch.</p>
+
+<p>
+The next step in our porting adventure is to start
+transforming Perl modules to Raku. During the transition
+from Perl to Raku we will strive to duplicate (port)
+every Perl module to Raku.
+</p>
+
+<p>
+In our previous article we continued to ensure the transformed program
+ran (without arguments) while we moved all its Perl subroutines to a
+Perl module. Now, while we port Perl modules, we will also
+check actual operation of the driver program.  We expect to find
+many more challenges as we continue working through my old code, so <em>let's
+dig in</em>!
+</p>
+
+<h3>Stage-2: where we left off</h3>
+
+<p>
+At the end of Part 1 I said there was one more thing I would do to the
+the driver program (<em>manage-web-site.raku</em>): replace
+the <em>if/else</em> blocks with <em>when</em> blocks, so I'll do that
+now. Please go the exercise repository directory for 2019 and ensure you
+are in the branch <em>stage-2</em> with no changes uncommitted.
+</p>
+
+<p>
+In order to use the <em>when</em> blocks we must use the implicit
+topic variable (<em>$_</em>) instead of the <em>$arg</em> variable;
+however, at the moment we still need it so we remove it from the loop
+variable and temporarily declare it at the top of the block (see Note 1): <code>my
+  $arg = $_</code>. Now let's execute the program again, this time
+    with the <code>-h</code> (help) option:
+</p>
+
+<pre><code>$ ./manage-web-site.raku -h
+Use of uninitialized value of type Any in numeric context
+  in block  at ./manage-web-site.raku line 184
+Use of uninitialized value of type Any in numeric context
+  in block  at ./manage-web-site.raku line 185
+Use of uninitialized value of type Any in numeric context
+  in block  at ./manage-web-site.raku line 186
+No such method 'Int' for invocant of type 'Any'
+  in block <unit> at ./manage-web-site.raku line 186
+</code></pre>
+
+<p>Here are the offending lines:</p>
+
+<pre><code># lines 181-187:
+my $arg = $_;                    # <= new decl of $arg, set to topic variable's value
+my $val;
+my $idx = index $arg, '=';       # <= this is the start of the problem
+if ($idx >= 0) {                 # <= this is where the problem first surfaces
+    $val = substr $arg, $idx+1;  # <= and then here
+    $arg = substr $arg, 0, $idx; # <= and here
+}
+</code></pre>
+
+<p>
+What has happened is another syntax change between Perl and Raku
+has surfaced: the <em>index</em> routine in Perl returnsa '-1'
+if the <em>needle</em> is not found, but in Raku it returns <em>undefined</em>
+      so our existing Perl test for an integer throws an error. The solution is to test
+      the return value for <em>definedness</em>. As in Perl, We can't just test for zero
+      with an <em>if</em> because that is a valid value but it isn't <em>truthy</em>.
+      So, we change our code to this:
+</p>
+
+<pre><code># lines 184-187:
+if $idx.defined {                # <= this is the only change needed
+    $val = substr $arg, $idx+1;
+    $arg = substr $arg, 0, $idx;
+}
+</code></pre>
+</ol>
+
+<p>After a few more cleanups we're ready to start porting a
+module. Ensure your git repo is on branch <em>stage-2></em> and clean
+with no uncommitted changes. Then execute:</p>
+
+<pre><code>$ git checkout -b stage-3
+</code></pre>
+
+<h3>Porting a Perl module</h3>
+
+<p>First, let's look at a few of the common issues we will meet:</p>
+
+<ol>
+  <li>Converting Perl's export methods to Raku's much simpler syntax</li>
+  <li>Converting Perl-style calls to Raku's function <em>signatures</em></li>
+  <li>Converting Perl's <code>foreach</code> loops to Raku's <code>for @arr -> {</code> loops</li>
+  <li>Converting Perl's <code>for (my $i...) {...}</code> loops to Raku's <code>loop (...) {...}</code></li>
+</ol>
+
+<p>There will definitely be more issues, and I'm sure the changes I make may not be the ones a person
+  more knowledgeable of modern Perl may make but remember, a lot of my old Perl predates modern Perl,
+  and I'm not always taking the time to improve the code but just getting a first cut at a working
+  solution.</p>
+
+<p>Before we look at the old Perl we will look at working examples of handling export and signatures.
+  The following Perl module (<em>P5.pm</em>) is using Damian Conway's <em>Perl6::Export::Attrs</em> module for simpler
+  and Raku-like export handling. Note the three types of argument passing.
+</p>
+
+<!-- insert P5.pm perl -->
+
+<p>The following Perl program (<em>usep5.pl</em>) shows how to use the three types of argument
+  passing. It also shows how the export-restricted sub (<em>sayABC</em>) is used.
+</p>
+
+<!-- insert usep5.pl perl -->
+
+<p>We exercise the Perl script:</p>
+
+<pre><code>$ ./usep5.pl
+$a = '1'; $b = '0'
+$a = '1'; $b = '2'; $c = '0'
+$c = 1
+$c = 2
+</code></pre>
+
+<p>We then see the Raku version of the Perl script and module demonstrating the changes
+  necessary to get the same output result (but see Note 2).</p>
+
+<!-- insert P6.pm6 perl -->
+
+<!-- insert usep6.raku raku -->
+
+<p>Executing the Raku script should show the same results:</p>
+
+<pre><code>$ ./usep6.raku
+$a = '1'; $b = '0'
+$a = '1'; $b = '2'; $c = '0'
+$c = 1
+$c = 2
+</code></pre>
+
+<p>Voila! I hope you can see the Raku module's version is cleaner and simpler looking as
+  compared to that of Perl.</p>
+
+<p>To lead us to the first module we want to port we will execute the
+main option in the driver program:</p>
+
+<pre><code>$ ./manage-web-site.raku -gen
+Collecting names by CS...
+Unable to open file 'usafa-template1-letter.ps': No such file or directory
+  in method call-args at /usr/local/rakudo.d/share/perl6/site/sources/ACCE801FB16076DAD1F96BE316DBFEDD148902C8 (Inline::Perl5) line 430
+  in sub  at /usr/local/rakudo.d/share/perl6/site/sources/ACCE801FB16076DAD1F96BE316DBFEDD148902C8 (Inline::Perl5) line 935
+  in block <unit> at ./manage-web-site.raku line 449
+</code></pre>
+
+<p>If we look at the line (449) that apparently cause the failure we see the following:</p>
+
+<pre><code>build_montage(%CL::mates, $genS); #=  <= in module ./PicFuncs.pm5
+</code></pre>
+
+<p>and we see that module <code>PicFuncs.pm5</code> is the entry
+point. So we will select that module to start with an copy it
+to <code>PicFuncs.pm6</code>.  We open the new file on our favorite
+  editor and see some changes we can make immdediately (starting at the first line):</p>
+
+<ul>
+  <li>change <code>package</code> to <code>unit module</code></li>
+  <li>remove the next file lines of code</li>
+  <li>change all sub lines reading <code>:Export(:DEFAULT)</code> to <code>is export</code></li>
+  <li>move sub <code>build_montage</code> to the top of the module to ease porting one sub at a time</li>
+  <li>remove Perl code for true return at the bottom of the file</li>
+  </ul>
+
+<p>Now let's take a look at some other things we notice:</p>
+
+<ul>
+
+  <li>the module is using the <code>G.pm</code> which is in Perl
+    format, so we will have to either convert that next or change the
+    way we <code>use</code> it inside the <code>PicFuncs.pm6</code>
+    module. I choose to convert the <code>G.pm</code> module to <code>G.pm6</code></li>
+
+  <li>to ease the port we want to end the <code>PicFuncs.pm6</code>
+  module after the first sub by use of the <code>=finish</code> pod
+  feature</li>
+
+  <li>we have to change the way we use the <code>PicFuncs</code>
+  module inside the <code>manage-web-site.raku</code> file</li>
+</ul>
+
+<p>You can probably guess that soon we will be in a situation where we
+  can't get much farther without converting the rest of the Perl
+  modules to Raku. But on to tending to the list above...</p>
+
+<p>To get a check on our progress we execute the driver program again:</p>
+
+<pre><code>$ ./manage-web-site.raku -gen
+===SORRY!=== Error while compiling /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm (PicFuncs)
+This appears to be Perl 5 code. If you intended it to be Perl 6 code, please use a Perl 6 style declaration like "unit package Foo;" or "unit module Foo;", or use the block form instead of the semicolon form.
+at /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm (PicFuncs):1
+------> package PicFuncs;⏏<EOL>
+</code></pre>
+
+<p>
+  Whoa, looks like we need to try to separate the two types of
+  modules since the names confuse Raku. I'll first try rearranging
+  some code in the driver....</p>
+
+<h4>The 'use' statement and module searches</h4>
+
+<p>
+Note there are some differences in the
+  way Perl and Raku handle the <code>use</code>statement. In Perl,
+modules are searched for modules in paths in the following order:
+paths defined in the <code>use lib</code> statement,
+paths defined in the environment variables <code>PERL5LIB</code>
+and <code>PERLLIB</code> (in that order), and, finally,
+in paths defined in the <code>@INC</code> array.
+In any list of paths, individual paths are separated by the colon character (':') which
+is consistent with the OS path separator.
+</p>
+
+<p>Raku is very
+  different. First, we cannot use the <code>use</code> statement
+  in a module because it will be precompiled before use and the <code>use</code>
+  statement cannot be precompiled. Second, Raku uses paths searched for in the
+  following order:
+  paths defined in the <code>use lib</code> statement,
+  paths defined in the environment variable <code>PERL6LIB</code>,
+  and paths defined during Raku installation.
+  In any list of paths, individual paths are separated by the comma character (',') which
+  is consistent with lists in Raku. Here are the search paths on my computer
+  for this test environment (<code>PERL6LIB=foo,bar</code>):</p>
+
+<pre><code>$ perl6 -e 'use lib <.>; use MyModule'
+===SORRY!===
+Could not find MyModule at line 1 in:
+    file#/home/tbrowde/raku-advent/raku-advent-2019
+    file#/home/tbrowde/raku-advent/raku-advent-2019/foo
+    file#/home/tbrowde/raku-advent/raku-advent-2019/bar
+    inst#/home/tbrowde/.perl6
+    inst#/usr/local/rakudo.d/share/perl6/site
+    inst#/usr/local/rakudo.d/share/perl6/vendor
+    inst#/usr/local/rakudo.d/share/perl6
+    ap#
+    nqp#
+    perl5#
+</code></pre>
+
+<h4>Resume porting...</h4>
+
+<p>Now try again:</p>
+
+<pre><code>$ ./manage-web-site.raku -gen
+===SORRY!===
+Unsupported use of 'foreach'; in Perl 6 please use 'for'
+at /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm6 (PicFuncs):48
+------>     foreach⏏ my $cs (@cs) {
+Other potential difficulties:
+    To pass an array, hash or sub to a function in Perl 6, just pass it as is.
+    For other uses of Perl 5's ref operator consider binding with ::= instead.
+    Parenthesize as \(...) if you intended a capture of a single variable.
+    at /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm6 (PicFuncs):23
+    ------>     U65::get_keys_by_sqdn(\⏏%sqdn, $mref);
+</code></pre>
+
+<p>
+  We see now the first glimpse of some of the loop differences between
+  Perl and Raku. I'll start with changing the loops. One warning about
+  Perl's <code>for (my $i = 0; $i < $max; ++$i) {...}</code>.  The
+ direct translation into Raku is this: <code>loop (my $i = 0; $i < $max; ++$i) {...}</code>,
+but therein lies a surprise. The loop inndex variable, which in the scope of the loop in Perl,
+is in the outer scope of the loop's parentheses in Raku! So I get in the habit of rewriting a Perl
+loop to emphasize the proper scope of the index variable and a better pointer to possible problems of
+duplicate declarations:</p>
+
+<pre><code>my $i;
+loop (my $i = 0; $i < $max; ++$i) {...}
+</code></pre>
+
+  <p>Now we start again with execution testing...oops, another syntax problem:</p>
+
+<pre><code>$ ./manage-web-site.raku -gen
+===SORRY!===
+Unsupported use of @{$sqdn{$cs}; in Perl 6 please use @($sqdn{$cs) for hard ref or @::($sqdn{$cs) for symbolic ref
+at /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm6 (PicFuncs):55
+------>         my @n = @{$sqdn{$cs}⏏};
+Other potential difficulties:
+    To pass an array, hash or sub to a function in Perl 6, just pass it as is.
+    For other uses of Perl 5's ref operator consider binding with ::= instead.
+    Parenthesize as \(...) if you intended a capture of a single variable.
+    at /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm6 (PicFuncs):23
+    ------>     U65::get_keys_by_sqdn(\⏏%sqdn, $mref);
+</code></pre>
+
+<p>A huge dfference between Perl arrays and hashes and those of Raku. I'll tend to those, too...another problem:</p>
+
+<pre><code>$ ./manage-web-site.raku -gen
+===SORRY!=== Error while compiling /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm6 (PicFuncs)
+Unsupported use of ->(), ->{} or ->[] as postfix dereferencer; in Perl 6 please use .(), .[] or .{} to deref, or whitespace to delimit a pointy block
+at /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm6 (PicFuncs):137
+------> 	        my $fname = $mref->{⏏$c}{file};
+</code></pre>
+
+<p>This problem is from the differences in signature and passing arguments to subs from the caller as discussed
+  earlier in the simple examples. I will work through the signature to see if we can help the situation. I'm first
+ going to look at the calling line in the driver we looked at before:</p>
+
+<pre><code>build_montage(%CL::mates, $genS);
+</code></pre>
+
+<p>We see two arguments: a hash and an apparent scalar. We changed those in Part 1 to Raku from their
+  original Perl syntax using a reference. So we are fine on the calling side at the moment. Back to the
+  called sub where the first few lines look like this (with comments stripped out):</p>
+
+<pre><code>
+sub build_montage is export {
+    my $mref  = shift @_; # \%CL::mates
+    my $cs    = shift @_;
+</code></pre>
+
+<p>We're going to change that to:</p>
+
+<pre><code>sub build_montage(%mates, $cs) is export {
+</code></pre>
+
+<p>and proceed with other required changes...After quite a few changes we start running into missing routines:</p>
+
+<pre><code>$ ./manage-web-site.raku -gen
+===SORRY!=== Error while compiling /home/tbrowde/mydata/tbrowde-home/perl6/raku-advent/raku-advent-2019/raku-advent-extras/2019/PicFuncs.pm6 (PicFuncs)
+Undeclared routines:
+    convert_single_pic_to_eps used at line 159
+    insert_logo used at lines 287, 297
+    insert_pictures used at line 279
+</code></pre>
+
+<p>This looks like a good stopping place. As I said earlier, we are probably at the point
+  where we will have to convert almost the whole project, or at least those modules
+  which are used by the driving script as well as all the other modules they use.
+  I checked out a <code>stage-4</code> branch and did some more housekeeping and tidying, but
+  I leave the continuation of porting for another day.
+</p>
+
+<h3>Summary</h3>
+
+<p>
+In these two articles you have seen one way to ease porting Perl code
+to Raku, and I hope they may help those who are considering moving to
+Raku see that it can be accomplished iteratively in smaller steps
+instead of taking great chunks of time. The results, for me, include
+code that is:
+</p>
+
+<ul>
+  <li>more visually appealing (cleaner and less cluttered)</li>
+  <li>easier to maintain</li>
+  <li>easier to see where to improve it</li>
+</ul>
+
+<p>If you are interested in seeing the rest of the conversion,
+  execute <code>.ask tbrowder</code> on IRC channel '#raku' and I'll
+  keep on plugging on the repo we've been using (and it will help me,
+  too!). Happy Rakuing</p>
+
+<p>
+I &#x2764;&#xFE0F; &#x2764;&#xFE0F; Raku! &#x1F60A;
+</p>
+
+<p>
+  &#x1F385; Merry Christmas &#x1F385; and &#x1F942; Happy New Year &#x1F389; to all and
+  may &#x271D; “God bless Us, Every One!” &#x271D; [<a href="#ref2">Ref. 1</a>]
+</p>
+
+<hr />
+<h2>APPENDIX</h2>
+<hr />
+
+<h3>Notes</h3>
+<ol>
+  <li>I wasn't sure if changing the value of the topic variable in the loop would allow the <em>when</em> blocks to continue to work as expected. Fortunately, it does.</li>
+  <li>
+    There are some subtle (to me) issues when using various module
+    export options in Raku.  The current discussion in the
+    docs <a href="https://docs.raku.org/language/modules#is_export">here</a> (see the ordered list of five Notes) do not describe exhaustively all
+    possible combinations of export options, and as a result I (who
+    was the person who wrote those notes) saw an error message when I
+    used a new combination of conditions that, in my opinion, was
+    misleading. Consequently I first suspected a Rakudo bug but now
+    suspect it is an LTA (<em>Less Than Awesome</em>) error message.
+    Keep an eye on Rakudo <a href="https://github.com/rakudo/rakudo/issues/3341">issue #3341</a> for a resolution.
+  </li>
+</ol>
+
+<h3>References</h3>
+<ol>
+<li><em>A Christmas Carol</em>, a short story by Charles Dickens (1812-1870), a well-known and popular Victorian author whose many works include <em>The Pickwick Papers</em>, <em>Oliver Twist</em>, <em>David Copperfield</em>, <em>Bleak House</em>, <em>Great Expectations</em>, and <em>A Tale of Two Cities</em>.</li>
+</ol>
