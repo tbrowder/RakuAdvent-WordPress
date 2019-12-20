@@ -31,7 +31,7 @@ p6doc RakuAdvent::WordPress;
 
 ## LICENSE
 
-Artistic 2.0. See [LICENSE](https://github.com/tbrowder/RakuAdvent-WordPress/blob/master/LICENSE).
+Artistic 2.0. See license [here](./LICENSE).
 
 ## COPYRIGHT
 
