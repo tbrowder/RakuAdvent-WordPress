@@ -17,6 +17,27 @@ p6doc RakuAdvent::WordPress;
 ```
 ## Example uses
 
+Basic usage:
+```raku
+$ make-wp-input -eg > advent.html
+Usage: make-wp-input <html source file> [-x][-c][-eg][-debug][-help]
+```
+
+Long help:
+```raku
+$ make-wp-input -help
+Usage: make-wp-input <html source file> [-x][-c][-eg][-debug][-help]
+Converts html source in the input file
+  to WordPress html in the output file 'wordpress.html'.
+
+Use the '-x' option to extract headings from the input
+  file for QC.
+
+Use the '-eg' option to write the example file to STDOUT.
+
+Use the '-c' option to convert to markdown. [NOT YET IMPLEMENTED]
+```
+
 See the example html source file included with
 the module:
 ```raku

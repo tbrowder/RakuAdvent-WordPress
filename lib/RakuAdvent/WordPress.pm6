@@ -406,7 +406,7 @@ sub help($usage, $of) is export {
     Use the '-x' option to extract headings from the input
       file for QC.
 
-    Use the '-eg' option to write the example file to STDOUT
+    Use the '-eg' option to write the example file to STDOUT.
 
     Use the '-c' option to convert to markdown. [NOT YET IMPLEMENTED]
     HERE
