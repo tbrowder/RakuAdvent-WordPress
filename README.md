@@ -2,9 +2,9 @@
 
 # RakuAdvent::WordPress
 
-This module provides a tool (*make-wp-input*) to aid Raku Advent authors in
-preparing their article source for conversion to
-a format compatible with the html and css used by WordPress (WP).
+This module provides a Raku tool (*make-wp-input*) to aid Raku Advent
+authors in preparing their article source for conversion to a format
+compatible with the html and css used by WordPress (WP).
 
 ## Installation
 ```raku
@@ -59,12 +59,14 @@ lines:
 - \<!-- Day N - My Advent Post Title --> [ON THE FIRST LINE ONLY]
 - \<!-- insert file-name code-type -->
 
-See the example file for an illustration of the title line.
+See the example file for an illustration of the title line.  See the
+test file `t/02-example-advent-html.t` for an example of inserting
+code into the source file.
 
-Note the interaction of other html source tags with WP
-may not be as expected. You are encouraged to preview
-results and experiment for yourself. The WP website
-is still under development, and user input is encouraged.
+Note the interaction of other html source tags with WP may not be as
+expected. You are encouraged to preview results and experiment for
+yourself. The WP website is still under development, and user input is
+encouraged.
 
 ## Planned features
 - Convert html to Github-flavored markdown
@@ -80,10 +82,13 @@ is still under development, and user input is encouraged.
     - changes to the post or scheduled time
 
 ## References
-- WordPress API
+- <a href="https://developer.wordpress.org/rest-api/">WordPress API</a>
+- <a href="https://developer.github.com/v3/">Github API</a>
 
 ## See also
+- `PasteBin::Gist`
 - `Text::Wrap`
+- `Acme::Advent::Highlighter`
 
 ## LICENSE
 
