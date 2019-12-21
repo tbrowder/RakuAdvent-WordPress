@@ -27,11 +27,22 @@ Create a raw html source file and format it
 for input to WordPress (with automatic error checking):
 ```raku
 $ make-wp-input advent.html
-```
+Normal end.
+See output files:
+  'wordpress.html'
+  '.wordpress.html.tmp.no-inserted-code'
+j```
 
 Check headings for desired sequence and size:
 ```raku
-$ make-wp-input advent.html -c
+$ make-wp-input advent.html -x
+<h3>Introduction</h3>
+<h3>Background</h3>
+<h4>Article creation</h4>
+<h3>Summary</h3>
+<h2>APPENDIX</h2>
+<h3>Notes</h3>
+<h3>References</h3>
 ```
 
 Note the source html must meet some simple rules
@@ -48,7 +59,7 @@ lines:
 - \<!-- Day N - My Advent Post Title --> [ON THE FIRST LINE ONLY]
 - \<!-- insert file-name code-type -->
 
-See the example file for an illustration.
+See the example file for an illustration of the title line.
 
 Note the interaction of other html source tags with WP
 may not be as expected. You are encouraged to preview
