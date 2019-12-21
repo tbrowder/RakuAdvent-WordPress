@@ -63,9 +63,6 @@ is still under development, and user input is encouraged.
     - setting the scheduled publication time
     - changes to the post or scheduled time
 
-
--
-
 ## References
 - WordPress API
 
