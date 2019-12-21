@@ -27,7 +27,7 @@ HERE
 
 my $s;
 
-shell "./bin/make-wp-input $f";
+shell "perl6 -Ilib ./bin/make-wp-input $f";
 
 $s = slurp $w1;
 is $s, q:to/HERE/;

@@ -1,6 +1,5 @@
 #!/usr/bin/env perl6
 
-use lib <./lib ../lib>;
 use RakuAdvent::WordPress;
 
 my $if;
@@ -8,23 +7,9 @@ my $of    = "wordpress.html";
 my $of-md = "wordpress.md";
 
 my $prog = $*PROGRAM.IO.basename; #= eliminate the path
-my $usage = "Usage: $prog <html source file> [-x][-c][-debug][-help]";
+my $usage = "Usage: $prog <html source file> [-x][-c][-eg][-debug][-help]";
 if !@*ARGS {
     say $usage;
-    exit;
-}
-
-sub help {
-    say $usage;
-    say qq:to/HERE/;
-    Converts html source in the input file
-      to WordPress html in the output file '$of'.
-
-    Use the '-x' option to extract headings from the input
-      file for QC.
-
-    Use the '-c' option to convert to markdown. [NOT YET IMPLEMENTED]
-    HERE
     exit;
 }
 
@@ -41,7 +26,10 @@ for @*ARGS {
         $xtract = 1;
     }
     when /^ :i \- h/ {
-        help; # <== exits from there
+        help($usage, $of); # <== exits from there
+    }
+    when /^ :i \- eg/ {
+        show-example; # <== exits from there
     }
     when /^ :i \- c/ {
         $convert = 1;

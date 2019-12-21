@@ -20,6 +20,7 @@ p6doc RakuAdvent::WordPress;
 See the example html source file included with
 the module:
 ```raku
+$ make-wp-input -eg > advent.html
 ```
 
 Create a raw html source file and format it
@@ -30,6 +31,7 @@ $ make-wp-input advent.html
 
 Check headings for desired sequence and size:
 ```raku
+$ make-wp-input advent.html -c
 ```
 
 Note the source html must meet some simple rules

@@ -13,7 +13,7 @@ is $s1, $s2;
 
 dies-ok { write-example $path }, 'try to overwrite existing file';
 
-lives-ok { write-example $path, :force }, 'use --force optopn';
+lives-ok { write-example $path, :force }, 'use --force option';
 
 END {
     unlink $of;

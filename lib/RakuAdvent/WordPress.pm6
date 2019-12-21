@@ -382,11 +382,33 @@ sub error-check($line, $linenum, :$file, :$debug) is export {
     $tag;
 }
 
-sub write-example($path, :$force) is export {
+sub write-example($dir, :$force) is export {
     my $s  = slurp %?RESOURCES<examples/advent-example.html>;
-    my $of = "$path/advent-example.html";
+    my $of = "$dir/advent-example.html";
     if !$force && $of.IO.f {
         die "FATAL: File '$of' exists. Move it or use the '--force' option."
     }
     spurt $of, $s;
+}
+
+sub show-example is export {
+    my $s  = slurp %?RESOURCES<examples/advent-example.html>;
+    say $s;
+    exit
+}
+
+sub help($usage, $of) is export {
+    say $usage;
+    say qq:to/HERE/;
+    Converts html source in the input file
+      to WordPress html in the output file '$of'.
+
+    Use the '-x' option to extract headings from the input
+      file for QC.
+
+    Use the '-eg' option to write the example file to STDOUT
+
+    Use the '-c' option to convert to markdown. [NOT YET IMPLEMENTED]
+    HERE
+    exit;
 }
