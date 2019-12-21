@@ -38,13 +38,13 @@ to ensure success with the current state of *make-wp-input*:
 1. The following opening tags should be the only characters on their respective
 lines:
 
-- <ul>
-- <ol>
+- \<ul>
+- \<ol>
 
 2. At the moment do **not** use any html comments except:
 
-- <!-- Day N - My Advent Post Title --> [ON THE FIRST LINE ONLY]
-- <!-- insert file-name code-type -->
+- \<!-- Day N - My Advent Post Title --> [ON THE FIRST LINE ONLY]
+- \<!-- insert file-name code-type -->
 
 See the example file for an illustration.
 
