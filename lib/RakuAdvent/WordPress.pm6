@@ -19,7 +19,7 @@ my regex tag-chars {<[a..zA..B1..6]>}
 
 sub get-tag-string(@lines, $tag) is export {
     #| the tags we handle here: p, h1..6, li
-    #| input should be: 
+    #| input should be:
     #|   the array of lines remaining, including
     #|     the line with the opening tag
     #|     as the first line of the array
@@ -380,4 +380,13 @@ sub error-check($line, $linenum, :$file, :$debug) is export {
     }
 
     $tag;
+}
+
+sub write-example($path, :$force) is export {
+    my $s  = slurp %?RESOURCES<examples/advent-example.html>;
+    my $of = "$path/advent-example.html";
+    if !$force && $of.IO.f {
+        die "FATAL: File '$of' exists. Move it or use the '--force' option."
+    }
+    spurt $of, $s;
 }

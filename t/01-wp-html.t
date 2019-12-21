@@ -48,8 +48,7 @@ is $s, q:to/HERE/;
 <!-- insert test.raku raku -->
 HERE
 
-#END {
-if 0 {
+END {
     unlink $r;
     unlink $f;
     unlink $w1;
