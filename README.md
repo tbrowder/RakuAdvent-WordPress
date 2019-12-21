@@ -64,7 +64,7 @@ is still under development, and user input is encouraged.
     - changes to the post or scheduled time
 
 
--  
+-
 
 ## References
 - WordPress API
@@ -74,7 +74,7 @@ is still under development, and user input is encouraged.
 
 ## LICENSE
 
-Artistic 2.0. See that license [here](./LICENSE).
+Artistic 2.0. See the license [here](./LICENSE).
 
 ## COPYRIGHT
 
