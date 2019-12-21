@@ -31,7 +31,7 @@ Normal end.
 See output files:
   'wordpress.html'
   '.wordpress.html.tmp.no-inserted-code'
-j```
+```
 
 Check headings for desired sequence and size:
 ```raku
