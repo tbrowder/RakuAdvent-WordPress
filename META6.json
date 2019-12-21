@@ -13,6 +13,7 @@
         "bugtracker" : "https://github.com/tbrowder/RakuAdvent-WordPress/issues"
     },
     "provides"    : {
+        "make-wp-input"         : "bin/make-wp-input",
         "RakuAdvent::WordPress" : "lib/RakuAdvent/WordPress.pm6",
         "RakuAdvent::WPTag"     : "lib/RakuAdvent/WPTag.pm6"
     },
@@ -23,6 +24,7 @@
          "Text::Utils"
     ],
     "resources" : [
+        "examples/advent-example.html"
     ],
     "tags" : [
 	"html",

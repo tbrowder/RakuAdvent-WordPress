@@ -7,7 +7,8 @@ my $if;
 my $of    = "wordpress.html";
 my $of-md = "wordpress.md";
 
-my $usage = "Usage: $*PROGRAM <html source file> [-x][-c][-debug][-help]";
+my $prog = $*PROGRAM.IO.basename; #= eliminate the path
+my $usage = "Usage: $prog <html source file> [-x][-c][-debug][-help]";
 if !@*ARGS {
     say $usage;
     exit;
@@ -18,10 +19,10 @@ sub help {
     say qq:to/HERE/;
     Converts html source in the input file
       to WordPress html in the output file '$of'.
-    
+
     Use the '-x' option to extract headings from the input
       file for QC.
-    
+
     Use the '-c' option to convert to markdown. [NOT YET IMPLEMENTED]
     HERE
     exit;
