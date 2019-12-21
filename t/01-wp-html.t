@@ -1,4 +1,3 @@
-
 use Test;
 
 use RakuAdvent::WordPress;
