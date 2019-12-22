@@ -54,7 +54,19 @@ See output files:
   '.wordpress.html.tmp.no-inserted-code'
 ```
 
-Check headings for desired sequence and size:
+Note the file 'wordpress.html' is the one that contains
+your source converted for use as your WordPress article.
+It includes any code you have inserted into it. The
+second file, the hidden file '.wordpress.html.tmp.no-inserted-code',
+is for use during the conversion to markdown (which is
+not yet implemented) but it hasn't had the code insertions
+completed. That is because the insertions into a markdown
+file will require slightly different handling.
+
+Sometimes in a tangle of html in a long
+article it's easy to lose track of the
+sequence and size of headings, so we have
+a check for that:
 ```raku
 $ make-wp-input advent.html -x
 <h3>Introduction</h3>
