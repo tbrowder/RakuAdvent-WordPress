@@ -1,0 +1,118 @@
+<!-- title: Day 23 - A Raku Advent Helper -->
+
+<h3>Introduction</h3>
+
+I have been writing Raku Advent posts annually
+since 2016 and it's always been a struggle for me
+to get a reliable transformation of my source file
+into the Raku Advent Wordpress (WP) website without something getting changed
+by WP. Then, the menus are terrible and editing can
+be troublesome. In this article I hope to show how the situation
+can be improved.
+
+<h3>Background</h3>
+
+The great name change to Raku this year unfortunately happened late in the
+  year and there was not a lot of time to get a new Raku Advent website
+  ready. Consequently, theme selection and tweaking, confusion
+  over the actual Raku Advent website link, and unfortunate article
+  cancellations were wrinkles in the normally
+  smoother process. However, we plan to improve the website before
+  the 2020 Advent season, and also get commitments earlier with
+  concrete drafts available sooner. In the meantime, in this hastily prepared
+  stand-in article, I will go into a bit of detail on some help
+we hope to offer.
+
+<h4>Article creation</h4>
+
+In past years I've created the articles in Gihub-flavored
+markdown, manually (with the assistance of my Emacs editor)
+converted each paragraph to single, long lines, and then posted it in a Github gist
+After that, I used the tool, developed by Zoffix and modified by ??,
+to extract the html from Github's representation of the
+markdown which results in a nice highlighting of code
+blocks. Finally, that html is copied and pasted into WP and a publishing
+schedule set up. That process is outlined here:
+
+<ol>
+<li> Write the post in Github-favored Markdown text</li>
+<li> Collapse each paragraph to one long line</li>
+<li> Paste the source into a Github gist</li>
+<li> Use the existing Advent tool to extract the resulting
+   html representation to one's local computer</li>
+<li> Copy the html and paste it into the blank, html
+   view of the selected WP editor</li>
+<li> View the finished product and check for errors</li>
+</ol>
+
+If errors are found:
+
+<ol start="7">
+<li> Correct the errors in the WP editor</li>
+</ol>
+
+OR
+
+<ol start="7">
+<li> correct the errors in the source</li>
+<li> repeat steps 2 through 6 again</li>
+</ol>
+
+That process is not so bad the first time though it, but when, inevitably,
+errors are found, one has the choice of manually editing it on WP
+or modifying the source and going through the entire process again!
+Neither choice is very good. So I created a Raku tool to eliminate
+some of the problems. My new steps as of this year:
+
+<ol>
+<li> write the post in raw html</li>
+<li> run my Advent tool (<em>make-wp-advent</em>) to format the source
+   into WP-acceptable html</li>
+<li> copy the html and paste it into the blank, html
+   view of the selected WP editor</li>
+<li> view the finished product and check for errors</li>
+</ol>
+
+If errors are found:
+
+<ol start="5">
+<li> correct the errors in the WP editor</li>
+</ol>
+
+OR
+
+<ol start="5">
+<li> correct the errors in the source</li>
+<li> repeat steps 2 through 4 again</li>
+</ol>
+
+So, in my new process, I've eliminated a couple of steps, but
+  I still have to copy/paste my clean WP source into the WordPress
+  editor. I addition, I have not taken advantage of the various APIs
+  to do the heavy lifting.
+
+<h3>Summary</h3>
+
+  This year has seen a lot of changes in the Raku community, especially
+  with the name change, and not all
+  are done yet. One area that still needs work is improving the new Raku
+  Advent website. We also hope to make it easier to create and post
+  Raku Advent articles as well as get more participation. Note the
+  2020 schedule is <a href="https://github.com/Raku/advent/blob/master/raku-advent-2020/schedule">open</a> now, so you can get your slot early and avoid
+  last minute shopping, er, Raku Adventing!
+
+I &#x2764;&#xFE0F; &#x2764;&#xFE0F; Raku! &#x1F60A;
+
+  Merry Christmas and a Happy New Year to all!
+
+<hr />
+<h2>APPENDIX</h2>
+<hr />
+
+<h3>Notes</h3>
+<ol>
+</ol>
+
+<h3>References</h3>
+<ol>
+</ol>
